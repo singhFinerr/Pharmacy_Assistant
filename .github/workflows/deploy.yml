@@ -17,19 +17,28 @@ jobs:
         shell: powershell
         run: |
           # Navigate to project folder
-          Set-Location "C:\Users\Admin\Pharmacy_Assistant"
+          $deployPath = "C:\Users\Admin\Pharmacy_Assistant"
+          Set-Location $deployPath
 
-          # Copy code from runner to deployment folder
-          Remove-Item -Path "C:\Users\Admin\Pharmacy_Assistant*" -Recurse -Force
-          Copy-Item -Path "$env:GITHUB_WORKSPACE\*" -Destination "C:\Users\Admin\Pharmacy_Assistant" -Recurse -Force
+          # Stop the service if it exists
+          if (Get-Service -Name "PharmacyAssistant" -ErrorAction SilentlyContinue) {
+              Stop-Service -Name "PharmacyAssistant" -Force
+              Write-Host "PharmacyAssistant service stopped."
+          }
+
+          # Copy/update code from runner workspace to deployment folder
+          Copy-Item -Path "$env:GITHUB_WORKSPACE\*" -Destination $deployPath -Recurse -Force
+          Write-Host "Code updated successfully."
 
           # Install dependencies
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
+          Write-Host "Dependencies installed."
 
-          # Restart service
+          # Restart the service
           if (Get-Service -Name "PharmacyAssistant" -ErrorAction SilentlyContinue) {
-              nssm restart PharmacyAssistant
+              Start-Service -Name "PharmacyAssistant"
+              Write-Host "PharmacyAssistant service restarted successfully."
           } else {
               Write-Host "Service 'PharmacyAssistant' not found. Please install it first."
           }
