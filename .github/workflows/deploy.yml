@@ -2,11 +2,11 @@ name: Deploy Pharmacy API
 
 on:
   push:
-    branches: [ "main" ]   # Runs when you push to main branch
+    branches: [ "main" ]   # Trigger on push to main branch
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest   # Can stay Linux if only SSH is used
 
     steps:
       - name: Checkout code
@@ -20,10 +20,23 @@ jobs:
           password: ${{ secrets.SERVER_PASS }}
           port: 22
           script_stop: true
-          shell: powershell
+          shell: powershell   # Ensures commands are executed in PowerShell on remote server
           script: |
-            cd C:\Pharmacy_Assistant
+            # Navigate to project folder
+            Set-Location "C:\Pharmacy_Assistant"
+
+            # Pull latest code
+            git reset --hard
+            git clean -fd
             git pull origin main
+
+            # Install/update dependencies
+            pip install --upgrade pip
             pip install -r requirements.txt
-            # Restart service (must exist beforehand)
-            nssm restart PharmacyAssistant
+
+            # Restart the service using NSSM
+            if (Get-Service -Name "PharmacyAssistant" -ErrorAction SilentlyContinue) {
+                nssm restart PharmacyAssistant
+            } else {
+                Write-Host "Service 'PharmacyAssistant' not found. Please install it first."
+            }
