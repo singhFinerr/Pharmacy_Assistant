@@ -6,12 +6,18 @@ on:
 
 jobs:
   deploy:
+<<<<<<< HEAD
     runs-on: ubuntu-latest   # Can stay Linux if only SSH is used
+=======
+    runs-on: self-hosted   # Your Windows self-hosted runner
+>>>>>>> 1c472126b70333b878af3c5dbe29ba17f29175f6
 
     steps:
-      - name: Checkout code
+      # 1️⃣ Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
+<<<<<<< HEAD
       - name: Deploy via SSH to Windows Server
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -40,3 +46,28 @@ jobs:
             } else {
                 Write-Host "Service 'PharmacyAssistant' not found. Please install it first."
             }
+=======
+      # 2️⃣ Deploy via PowerShell
+      - name: Deploy to Windows Server
+        shell: powershell
+        run: |
+          # Navigate to project folder
+          Set-Location "C:\Pharmacy_Assistant"
+
+          # Pull latest code
+          git reset --hard
+          git clean -fd
+          git pull origin main
+
+          # Install/update dependencies
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+          # Restart the service using NSSM
+          if (Get-Service -Name "PharmacyAssistant" -ErrorAction SilentlyContinue) {
+              nssm restart PharmacyAssistant
+              Write-Host "PharmacyAssistant service restarted successfully."
+          } else {
+              Write-Host "Service 'PharmacyAssistant' not found. Please install it first."
+          }
+>>>>>>> 1c472126b70333b878af3c5dbe29ba17f29175f6
