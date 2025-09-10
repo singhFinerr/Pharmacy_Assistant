@@ -6,11 +6,7 @@ on:
 
 jobs:
   deploy:
-<<<<<<< HEAD
-    runs-on: ubuntu-latest   # Can stay Linux if only SSH is used
-=======
     runs-on: self-hosted   # Your Windows self-hosted runner
->>>>>>> 1c472126b70333b878af3c5dbe29ba17f29175f6
 
     steps:
       # 1️⃣ Checkout code
