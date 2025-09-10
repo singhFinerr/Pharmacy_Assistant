@@ -17,11 +17,11 @@ jobs:
         shell: powershell
         run: |
           # Navigate to project folder
-          Set-Location "C:\Pharmacy_Assistant"
+          Set-Location "C:\Users\Admin\Pharmacy_Assistant"
 
           # Copy code from runner to deployment folder
-          Remove-Item -Path "C:\Pharmacy_Assistant\*" -Recurse -Force
-          Copy-Item -Path "$env:GITHUB_WORKSPACE\*" -Destination "C:\Pharmacy_Assistant" -Recurse -Force
+          Remove-Item -Path "C:\Users\Admin\Pharmacy_Assistant*" -Recurse -Force
+          Copy-Item -Path "$env:GITHUB_WORKSPACE\*" -Destination "C:\Users\Admin\Pharmacy_Assistant" -Recurse -Force
 
           # Install dependencies
           python -m pip install --upgrade pip
